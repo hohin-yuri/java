@@ -1,0 +1,42 @@
+{
+  "groups": [
+    {
+      "name": "spring.social",
+      "type": "org.asaunin.socialnetwork.config.SocialConfiguration",
+      "sourceType": "org.asaunin.socialnetwork.config.SocialConfiguration"
+    },
+    {
+      "name": "spring.social.facebook",
+      "type": "org.asaunin.socialnetwork.config.SocialConfiguration$SocialConnection",
+      "sourceType": "org.asaunin.socialnetwork.config.SocialConfiguration"
+    },
+    {
+      "name": "spring.social.google",
+      "type": "org.asaunin.socialnetwork.config.SocialConfiguration$SocialConnection",
+      "sourceType": "org.asaunin.socialnetwork.config.SocialConfiguration"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.social.facebook.client-id",
+      "type": "java.lang.String",
+      "sourceType": "org.asaunin.socialnetwork.config.SocialConfiguration$SocialConnection"
+    },
+    {
+      "name": "spring.social.facebook.client-secret",
+      "type": "java.lang.String",
+      "sourceType": "org.asaunin.socialnetwork.config.SocialConfiguration$SocialConnection"
+    },
+    {
+      "name": "spring.social.google.client-id",
+      "type": "java.lang.String",
+      "sourceType": "org.asaunin.socialnetwork.config.SocialConfiguration$SocialConnection"
+    },
+    {
+      "name": "spring.social.google.client-secret",
+      "type": "java.lang.String",
+      "sourceType": "org.asaunin.socialnetwork.config.SocialConfiguration$SocialConnection"
+    }
+  ],
+  "hints": []
+}

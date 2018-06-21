@@ -1,0 +1,64 @@
+
+package by.bsuir.project.resource;
+
+
+public final class Parameters {
+    public final static String TITLE = "title";
+    public final static String DESCRIPTION = "description";
+    public final static String WEIGHT = "weight";
+    public final static String PRICE = "price";
+    public final static String CALORIES = "calories";
+    public final static String CATEGORY_ID = "categoryId"; 
+    public final static String COMMAND = "command"; 
+    public final static String PRODUCTS = "products";    
+    public final static String NOT_BANNED_CUSTOMERS = "notBannedCustomers";
+    public final static String CUSTOMER_ID = "customerId";
+    public final static String PRODUCT_ID = "productId";    
+    public final static String CART = "cart";
+    public final static String CUSTOMER = "customer";    
+    public final static String CATEGORY = "category";
+    public final static String PRODUCT = "product";
+    public final static String ERROR = "error";
+    public final static String LOGIN = "login";
+    public final static String PASSWORD = "password";
+    public final static String ADMIN = "admin";
+    public final static String ORDERS = "orders";
+    public final static String CATEGORIES = "categories";
+    public final static String LOCALE = "locale";
+    public final static String CURRENT_JSP = "currentJsp";
+    public final static String FIRST_NAME = "firstName";
+    public final static String SECOND_NAME = "secondName";
+    public final static String PHONE = "phone";
+    public final static String STREET = "street";
+    public final static String HOUSE = "house";
+    public final static String QUANTITY = "quantity";
+    public final static String APARTMENT = "apartment";
+    public final static String VALIDATION_ERROR_FLAG = "validationErrorFlag";
+    public final static String BANNED_CUSTOMERS = "bannedCustomers";        
+    public final static String ADMIN_LOGIN_COMMAND = "adminLogin";        
+    public final static String USER_LOGIN_COMMAND = "userLogin";
+    public final static String USER_REGISTER_COMMAND = "userRegister";
+    public final static String LOGOUT_COMMAND = "logout";  
+    public final static String CHANGE_LANG_COMMAND = "changeLang";                        
+    public final static String INDEX_COMMAND = "index";          
+    public final static String CONFIRM_COMMAND = "confirm";  
+    public final static String ADD_PRODUCT_COMMAND = "addProduct";  
+    public final static String SAVE_PRODUCT_COMMAND = "saveProduct";  
+    public final static String DELETE_PRODUCT_COMMAND = "deleteProduct";  
+    public final static String UPDATE_CART_COMMAND = "updateCart";
+    public final static String ADD_TO_CART_COMMAND = "addToCart";        
+    public final static String UNCART_COMMAND = "uncart";        
+    public final static String UNCART_ALL_COMMAND = "uncartAll";        
+    public final static String CLEAR_CART_COMMAND = "clearCart";       
+    public final static String VIEW_CART_COMMAND = "viewCart";        
+    public final static String PURCHASE_COMMAND = "purchase";  
+    public final static String GET_BANLIST_COMMAND = "getBanList"; 
+    public final static String GET_ORDERS_COMMAND = "getOrders"; 
+    public final static String ADD_TO_BANLIST_COMMAND = "addToBanList";
+    public final static String REMOVE_FROM_BANLIST_COMMAND = "removeFromBanList";
+    public final static String GET_NOT_BANNED_CUSTOMERS_COMMAND = "getNotBannedCustomers";
+    public final static String GET_PRODUCTS_COMMAND = "getProducts";        
+    public final static String GET_CATEGORIES_COMMAND = "getCategories";        
+    public final static String LOGIN_PAGE_COMMAND = "loginPage";   
+    public final static String REGISTER_PAGE_COMMAND = "registerPage";   
+}

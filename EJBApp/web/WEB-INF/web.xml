@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee                         http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <welcome-file-list>
+        <welcome-file>index</welcome-file>
+    </welcome-file-list>
+    <context-param>
+        <param-name>javax.servlet.jsp.jstl.fmt.request.charset</param-name>
+        <param-value>UTF-8</param-value>
+    </context-param>
+    <filter>
+        <filter-name>encodingfilter</filter-name>
+        <filter-class>by.epam.laba_9.filter.EncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>encodingfilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <jsp-config>
+        <taglib>
+            <taglib-uri>customtags</taglib-uri>
+            <taglib-location>/WEB-INF/tld/custom.tld</taglib-location>
+        </taglib>
+        <jsp-property-group>
+            <description>header and footer settings for site pages</description>
+            <url-pattern>/index.jsp</url-pattern>
+            <url-pattern>/error.jsp</url-pattern>
+            <url-pattern>/WEB-INF/view/sitePages/*</url-pattern>
+            <include-prelude>/WEB-INF/jspf/site/header.jspf</include-prelude>
+            <include-coda>/WEB-INF/jspf/site/footer.jspf</include-coda>
+        </jsp-property-group>
+        <jsp-property-group>
+            <description>header and footer settings for admin pages</description>
+            <url-pattern>/WEB-INF/view/adminPages/banlist.jsp</url-pattern>
+            <url-pattern>/WEB-INF/view/adminPages/categories.jsp</url-pattern>
+            <url-pattern>/WEB-INF/view/adminPages/customers.jsp</url-pattern>
+            <url-pattern>/WEB-INF/view/adminPages/orders.jsp</url-pattern>
+            <url-pattern>/WEB-INF/view/adminPages/products.jsp</url-pattern>
+            <include-prelude>/WEB-INF/jspf/admin/header.jspf</include-prelude>
+            <include-coda>/WEB-INF/jspf/admin/footer.jspf</include-coda>
+        </jsp-property-group>
+    </jsp-config>
+    <error-page>
+        <exception-type>javax.servlet.ServletException</exception-type>
+        <location>/error.jsp</location>
+    </error-page>
+    <context-param>
+        <description>The path to category images</description>
+        <param-name>categoryImagePath</param-name>
+        <param-value>/WebApp4Epam/img/categories/</param-value>
+    </context-param>
+    <context-param>
+        <description>The path to product images</description>
+        <param-name>productImagePath</param-name>
+        <param-value>/WebApp4Epam/img/products/</param-value>
+    </context-param>
+    <security-constraint>
+        <display-name>AdminConstraint</display-name>
+        <web-resource-collection>
+            <web-resource-name>Admin</web-resource-name>
+            <description/>
+            <url-pattern>/admin.jsp</url-pattern>
+            <url-pattern>/editCategory.jsp</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description/>
+            <role-name>AdminRole</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <form-login-config>
+            <form-login-page>/WEB-INF/view/adminPages/adminLogin.jsp</form-login-page>
+            <form-error-page>/WEB-INF/view/adminPages/adminLoginError.html</form-error-page>
+        </form-login-config>
+    </login-config>
+    <security-role>
+        <description>Пользователи, добавленные к этой роли, получат доступ к каталогу secureAdmin на сервере.</description>
+        <role-name>AdminRole</role-name>
+    </security-role>
+</web-app>

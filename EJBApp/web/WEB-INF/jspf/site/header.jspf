@@ -1,0 +1,47 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<fmt:requestEncoding value="UTF-8"/>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ page import="by.bsuir.project.resource.MessageManager" %>
+<%@ taglib prefix="ctg" uri="customtags" %>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" href="css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="css/main.css"/>
+        <link rel="stylesheet" href="css/font-awesome.min.css">  
+    </head>
+    <body>     
+        <div class="container"> 
+            <div class="header">
+                <ul class="nav nav-pills pull-right">                                    
+                    <ctg:current-url/>                                                             
+                    <li>
+                        <c:choose>
+                            <c:when test="${not empty sessionScope.customer}">           
+                                <h4><%out.write(MessageManager.getInstance().getProperty(MessageManager.WELCOME_USER));%> ${sessionScope.customer.getFirstName()}!</h4>                      
+                            <li><a href="cart?command=viewCart"><%out.write(MessageManager.getInstance().getProperty(MessageManager.CART));%> <i class="fa fa-shopping-cart"></i><span class="badge">${sessionScope.cart.getCartSize()}</span></a></li>          
+                            <li><a class="btn btn-lg btn-success" href="index?command=logout"><%out.write(MessageManager.getInstance().getProperty(MessageManager.LOGOUT));%></a></li>   
+                            </c:when>
+                            <c:otherwise> 
+                            <h4><%out.write(MessageManager.getInstance().getProperty(MessageManager.WELCOME));%></h4>                      
+                            <li><a class="btn btn-lg btn-success" href="index?command=loginPage" role="button"><%out.write(MessageManager.getInstance().getProperty(MessageManager.SIGN));%></a></li>                            
+                        </c:otherwise>
+                    </c:choose> 
+                    </li>
+                    <li>
+                        <div> 
+                            <a href="lang?command=changeLang&locale=en-EN">
+                                <button type="submit" class="btn btn-xs btn-danger" data-toggle="modal" data-target="#myModal">Eng</button>         
+                            </a>
+                            <br />
+                            <a href="lang?command=changeLang&locale=ru-RU">
+                                <button type="submit" class="btn btn-xs btn-danger" data-toggle="modal" data-target="#myModal">Rus</button>         
+                            </a>  
+                        </div>
+                    </li>
+                    <li>
+                        <a class="btn btn-lg btn-success" href="index?command=getCategories"><%out.write(MessageManager.getInstance().getProperty(MessageManager.HOME));%></a>
+                    </li>
+                </ul>             
+            </div>
