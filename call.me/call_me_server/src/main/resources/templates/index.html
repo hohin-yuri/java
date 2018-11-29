@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" th:charset="UTF-8">
+    <title>Call.Me - Free Contact Manager</title>
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script th:src="@{|/js/lodash.js|}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{|/css/style.css|}" />
+</head>
+<body>
+<nav class="navbar">
+    <a href="">
+        <img class="navbar-logo" th:src="@{|/static/seal.svg|}">
+        <span class="navbar-brand">call.me</span>
+    </a>
+    <a id="search-contact" href="/contacts/search">
+        <i class="fa fa-search"></i>
+    </a>
+</nav>
+
+<div>
+    <div>
+    </div>
+    <div id="appContent">
+
+    </div>
+    <div></div>
+</div>
+<div id="modal" class="modal bd-example-modal-lg" tabindex="-1" role="dialog">
+    <div class="header">
+        <div class="title"></div>
+        <span class="close" data-role="close"><i class="fa fa-times"></i></span>
+    </div>
+    <div id="body">
+    </div>
+</div>
+
+
+<script type="text/template" id="contactsListTemplate">
+    <span class="contacts-menu">
+            <a id="add-contact" href="/contacts">Add Contact</a>
+            <a id="delete-contacts" href="/contacts">Delete Contacts</a>
+            <a id="send-emails" href="/email/">Send Email</a>
+    </span>
+    <div id="contacts-list"></div>
+    <div class="pagination">
+        <a id="pagination-left" href="#">Prev</a>
+        <a id="pagination-right" href="#">Next</a>
+    </div>
+</script>
+<script type="text/template" id="attachmentsListTemplate">
+    <span id="attachments-menu">
+            <a id="add-attachment" href="attachment/">Add Attachment</a>
+            <a id="delete-attachments" href="attachment/">Delete Attachment</a>
+    </span>
+    <div id="attachments-list"></div>
+</script>
+<script type="text/template" id="phonesListTemplate">
+    <span class="phones-menu">
+            <a id="add-phone" href="phones/">Add Phone</a>
+            <a id="delete-phones" href="phones/">Delete Phones</a>
+    </span>
+    <div id="phones-list"></div>
+</script>
+<script type="text/template" id="contactListItemTemplate">
+    <li class="contacts-list__item">
+        <input type="checkbox"/>
+        <span class="spacer0"></span>
+        <span class="name">
+            <span>
+                <a class="contacts-list__link" href="contacts/<%- contact.id %>">
+                    <%- contact.firstName %> <%- contact.secondName %> <%- contact.surname %>
+                </a>
+            </span>
+            <span><%- contact.birthday.toLocaleDateString("en-US") %></span>
+            <span class="contacts-list__address"><%- contact.country %> <%- contact.city %> <%- contact.apartment %></span>
+            <span><%- contact.job %></span>
+
+        </span>
+        <span class="spacer"></span>
+    </li>
+</script>
+<script type="text/template" id="phoneListItemTemplate">
+    <li class="contacts-list__item">
+        <input type="checkbox"/>
+        <span class="spacer0"></span>
+        <span class="name">
+            <span>
+                <a class="phones-list__link" href="phones/<%- phone.id %>">
+                   +<%- phone.countryCode %>-<%- phone.operatorCode %>-<%- phone.phoneNumber %>
+                </a>
+                <span><%- phone.comment %></span>
+                <span><%- phone.phoneType %></span>
+            </span>
+
+        </span>
+        <span class="spacer"></span>
+    </li>
+</script>
+<script type="text/template" id="phoneTemplate">
+    <li class="contacts-list__item">
+        <form id="phone-form" class="contact-form" action="">
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="number"
+                           name="countryCode"
+                           class="form-control input"
+                           id="id_country-code"
+                           placeholder="Country code"
+                           value="<% if(phone) { %><%- phone.countryCode %><% } %>"/>
+                    <input type="number"
+                           name="operatorCode"
+                           class="form-control input"
+                           id="id_operator-code"
+                           placeholder="Operator code"
+                           value="<% if(phone) { %><%- phone.operatorCode %><% } %>"/>
+                    <input type="number"
+                           name="phoneNumber"
+                           class="form-control input"
+                           id="id_phone-number"
+                           placeholder="Phone number"
+                           value="<% if(phone) { %><%- phone.phoneNumber %><% } %>"/>
+                </div>
+                <input type="text"
+                       name="comment"
+                       class="form-control input"
+                       id="id_phone-comment"
+                       placeholder="Phone comment"
+                       value="<% if(phone) { %><%- phone.comment %><% } %>"/>
+            </div>
+            <button type="reset" class="btn btn-info">Reset</button>
+            <button id="<% if(phone) { %>updatePhoneButton<% } else { %>addPhoneButton<% } %>"
+                    type="button"
+                    class="btn btn-success">Submit</button>
+        </form>
+
+    </li>
+</script>
+<script type="text/template" id="attachmentListItemTemplate">
+    <li class="attachments-list__item">
+        <input class="attachment-check-box" type="checkbox"/>
+        <span class="spacer0"></span>
+        <span class="name">
+            <span><a class="download-file"
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     href="attachment/<%- attachment.id %>"><%- attachment.filename %></a></span>
+            <span><%- attachment.comment %> </span>
+            <span><%- attachment.uploaded %></span>
+        </span>
+    </li>
+</script>
+<script type="text/template" id="contactComponentTemplate">
+    <div id="avatar-container"></div>
+    <form id="contact-form" class="contact-form" <% if(contact) { %>data-id="<%- contact.id %>"<% } %>>
+        <div class="form-group">
+            <label for="id_firstName">
+                First Name*
+            </label>
+            <input type="text"
+                   name="firstName"
+                   class="form-control input"
+                   id="id_firstName"
+                   placeholder="Enter first name"
+                   value="<% if(contact) { %><%- contact.firstName %><% } %>"/>
+        </div>
+        <div class="form-group">
+            <label for="id_secondName">
+                Second Name*
+            </label>
+            <input type="text"
+                   name="secondName"
+                   class="form-control input"
+                   id="id_secondName"
+                   placeholder="Enter second name"
+                   value="<% if(contact) { %><%- contact.secondName %><% } %>"/>
+        </div>
+        <div class="form-group">
+            <label for="id_surname">
+                Surname*
+            </label>
+            <input type="text"
+                   name="surname"
+                   class="form-control input"
+                   id="id_surname"
+                   placeholder="Enter surname"
+                   value="<% if(contact) { %><%- contact.surname %><% } %>"/>
+        </div>
+        <div class="form-group">
+            <label for="id_citizenship">
+                Citizenship
+            </label>
+            <input type="text"
+                   name="citizenship"
+                   class="form-control input"
+                   id="id_citizenship"
+                   placeholder="Enter citizenship"
+                   value="<% if(contact) { %><%- contact.citizenship %><% } %>">
+        </div>
+        <div class="form-group">
+            <label for="id_email">
+                Email*
+            </label>
+            <input type="text"
+                   name="email"
+                   class="form-control input"
+                   id="id_email"
+                   placeholder="Enter email"
+                   value="<% if(contact) { %><%- contact.email %><% } %>"/>
+        </div>
+        <div class="form-group">
+            <label for="id_birthday">
+                Birthday*
+            </label>
+            <input type="date"
+                   name="birthday"
+                   class="form-control input"
+                   id="id_birthday"
+                   placeholder="Enter zip code"
+                   value="<% if(contact) { %><%- contact.birthday.toISOString().slice(0,10) %><% } %>"/>
+        </div>
+        <div class="form-group">
+            <label for="id_gender">
+                Gender*
+            </label>
+            <input name="gender"
+                   list="genders"
+                   class="form-control input"
+                   id="id_gender"
+                   placeholder="Enter gender"
+                   value="<% if(contact) { %><%- contact.gender %><% } else { %>UNDEFINED<% } %>"/>
+            <datalist id="genders">
+                <option value="MALE">
+                <option value="FEMALE">
+                <option value="UNDEFINED">
+            </datalist>
+        </div>
+        <div class="form-group">
+            <label for="id_materialStatus">
+                Material Staus*
+            </label>
+            <input name="materialStatus"
+                   list="statuser"
+                   class="form-control input"
+                   id="id_materialStatus"
+                   placeholder="Enter material status"
+                   value="<% if(contact) { %><%- contact.materialStatus %><% } else { %>MARRIED<% } %>"/>
+            <datalist id="statuser">
+                <option value="MARRIED">
+                <option value="SINGLE">
+                <option value="DIVORCED">
+                <option value="WIDOWED">
+            </datalist>
+        </div>
+        <div class="form-group">
+            <label for="id_website">
+                Website
+            </label>
+            <input type="text"
+                   name="website"
+                   class="form-control input"
+                   id="id_website"
+                   placeholder="Enter website"
+                   value="<% if(contact) { %><%- contact.website %><% } %>"/>
+        </div>
+        <div class="form-group">
+            <label for="id_country">
+                Country
+            </label>
+            <input type="text"
+                   name="country"
+                   class="form-control input"
+                   id="id_country"
+                   placeholder="Enter country"
+                   value="<% if(contact) { %><%- contact.country %><% } %>"/>
+        </div>
+        <div class="form-group">
+            <label for="id_city">
+                City
+            </label>
+            <input type="text"
+                   name="city"
+                   class="form-control input"
+                   id="id_city"
+                   placeholder="Enter website"
+                   value="<% if(contact) { %><%- contact.city %><% } %>"/>
+        </div>
+        <div class="form-group">
+            <label for="id_street">
+                Street
+            </label>
+            <input type="text"
+                   name="street"
+                   class="form-control input"
+                   id="id_street"
+                   placeholder="Enter street"
+                   value="<% if(contact) { %><%- contact.street %><% } %>"/>
+        </div>
+        <div class="form-group">
+            <label for="id_apartment">
+                Apartment
+            </label>
+            <input type="text"
+                   name="apartment"
+                   class="form-control input"
+                   id="id_apartment"
+                   placeholder="Enter apartment"
+                   value="<% if(contact) { %><%- contact.apartment %><% } %>"/>
+        </div>
+        <div class="form-group">
+            <label for="id_zip-code">
+                Zip Code
+            </label>
+            <input type="number"
+                   name="zipCode"
+                   class="form-control input"
+                   id="id_zip-code"
+                   placeholder="Enter zip code"
+                   value="<% if(contact) { %><%- contact.zipCode %><% } %>"/>
+        </div>
+        <button id="resetButton" type="reset" class="btn btn-info">Reset</button>
+        <button id="cancelButton" type="button" class="btn btn-light">Cancel</button>
+        <button id="<% if(contact) { %>updateContactButton<% } else { %>addContactButton<% } %>"
+                type="button"
+                class="btn btn-success">Submit</button>
+    </form>
+    <div id="attachments-list-container">
+
+    </div>
+    <div id="phones-list-container">
+
+    </div>
+</script>
+<script type="text/template" id="sendEmailTemplate">
+    <form id="email-form" method="post" action="" role="form">
+
+        <div class="messages"></div>
+
+        <div class="controls">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="form_name">Theme *</label>
+                        <input id="form_name" type="text" name="theme" class="form-control" placeholder="Please enter your theme *" required="required" data-error="Theme is required.">
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="form_email">Emails</label>
+                        <input id="form_email" name="recipients" class="form-control" placeholder="Please enter your email *" required="required" data-error="Valid email is required.">
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="templateSelect">Template</label>
+                        <select class="form-control" id="templateSelect">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="form_message">Message *</label>
+                        <textarea id="form_message" name="text" class="form-control" placeholder="Message for me *" rows="4" required="required" data-error="Please, leave us a message."></textarea>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <input id="cancel-send-email" class="btn" value="cancel">
+                    <input type="submit" id="email-submit" class="btn btn-success btn-send" value="Send message">
+                </div>
+            </div>
+        </div>
+
+    </form>
+</script>
+<script type="text/template" id="fileUploaderComponentTemplate">
+    <div id="addAttachment">
+        <form id="uploadForm" enctype="multipart/form-data" name="upload">
+            <div class="input-group btn">
+                <label class="btn btn-primary">
+                    <input id="fileInput" class="btn" type="file" name="file">
+                </label>
+            </div>
+            <label for="id_attachmentComment">
+                Comment
+            </label>
+            <input type="text"
+                   name="comment"
+                   class="form-control input"
+                   id="id_attachmentComment"
+                   placeholder="Enter comment"
+                   value=""/>
+            <div>
+                <button type="reset" class="btn btn-info">Reset</button>
+                <button id="cancelAddAttachment" type="button" class="btn btn-light">Cancel</button>
+                <button id="addAttachmentButton"
+                        type="button"
+                        class="btn btn-success">Submit</button>
+            </div>
+        </form>
+        <div id="progerss-log">Uploading progress</div>
+    </div>
+</script>
+<script type="text/template" id="contactSearchComponentTemplate">
+    <form id="contact-search-form" class="contact-form">
+    <div class="form-group">
+        <label for="id_firstName">
+            First Name*
+        </label>
+        <input type="text"
+               name="firstName"
+               class="form-control input"
+               id="id_firstNameSearch"
+               placeholder="Enter first name"
+               value=""/>
+    </div>
+    <div class="form-group">
+        <label for="id_secondName">
+            Second Name*
+        </label>
+        <input type="text"
+               name="secondName"
+               class="form-control input"
+               id="id_secondNameSearch"
+               placeholder="Enter second name"
+               value=""/>
+    </div>
+    <div class="form-group">
+        <label for="id_surname">
+            Surname*
+        </label>
+        <input type="text"
+               name="surname"
+               class="form-control input"
+               id="id_surnameSearch"
+               placeholder="Enter surname"
+               value=""/>
+    </div>
+    <div class="form-group">
+        <label for="id_citizenship">
+            Citizenship
+        </label>
+        <input type="text"
+               name="citizenship"
+               class="form-control input"
+               id="id_citizenshipSearch"
+               placeholder="Enter citizenship"
+               value="">
+    </div>
+    <div class="form-group">
+        <label for="id_birthdayFrom">
+            Birthday From
+        </label>
+        <input type="date"
+               name="birthday"
+               class="form-control input"
+               id="id_birthdayFrom"
+               placeholder="Enter zip code"
+               value=""/>
+    </div>
+    <div class="form-group">
+        <label for="id_birthdayTo">
+            Birthday To
+        </label>
+        <input type="date"
+               name="birthday"
+               class="form-control input"
+               id="id_birthdayTo"
+               placeholder="Enter zip code"
+               value=""/>
+    </div>
+    <div class="form-group">
+        <label for="id_genderSearch">
+            Gender*
+        </label>
+        <input name="gender"
+               list="gendersSearch"
+               class="form-control input"
+               id="id_genderSearch"
+               placeholder="Enter gender"
+               value="MALE"/>
+        <datalist id="gendersSearch">
+            <option value="MALE">
+            <option value="FEMALE">
+            <option value="UNDEFINED">
+        </datalist>
+    </div>
+    <div class="form-group">
+        <label for="id_materialStatusSearch">
+            Material Staus*
+        </label>
+        <input name="materialStatus"
+               list="statuserSearch"
+               class="form-control input"
+               id="id_materialStatusSearch"
+               placeholder="Enter material status"
+               value="MARRIED"/>
+        <datalist id="statuserSearch">
+            <option value="MARRIED">
+            <option value="SINGLE">
+            <option value="DIVORCED">
+            <option value="WIDOWED">
+        </datalist>
+    </div>
+    <div class="form-group">
+        <label for="id_countrySearch">
+            Country
+        </label>
+        <input type="text"
+               name="country"
+               class="form-control input"
+               id="id_countrySearch"
+               placeholder="Enter country"
+               value=""/>
+    </div>
+    <div class="form-group">
+        <label for="id_citySearch">
+            City
+        </label>
+        <input type="text"
+               name="city"
+               class="form-control input"
+               id="id_citySearch"
+               placeholder="Enter website"
+               value=""/>
+    </div>
+    <div class="form-group">
+        <label for="id_streetSearch">
+            Street
+        </label>
+        <input type="text"
+               name="street"
+               class="form-control input"
+               id="id_streetSearch"
+               placeholder="Enter street"
+               value=""/>
+    </div>
+    <div class="form-group">
+        <label for="id_apartmentSearch">
+            Apartment
+        </label>
+        <input type="text"
+               name="apartment"
+               class="form-control input"
+               id="id_apartmentSearch"
+               placeholder="Enter apartment"
+               value=""/>
+    </div>
+    <div class="form-group">
+        <label for="id_zip-codeSearch">
+            Zip Code
+        </label>
+        <input type="number"
+               name="zipCode"
+               class="form-control input"
+               id="id_zip-codeSearch"
+               placeholder="Enter zip code"
+               value=""/>
+    </div>
+    <button id="resetSearchButton" type="reset" class="btn btn-info">Reset</button>
+    <button id="cancelSearchButton" type="button" class="btn btn-light">Cancel</button>
+    <button id="searchContactButton"
+            type="button"
+            class="btn btn-success">Submit</button>
+    </form>
+</script>
+<script type="text/template" id="avatarTemplate">
+<div>
+    <div>
+        <img id="avatar-image"
+             class="rounded"
+             alt="Avatar"
+             width="130" height="130"
+             src="<%- url %>">
+    </div>
+    <form id="avatarForm" enctype="multipart/form-data" data-id="<%- contactId %>" name="upload">
+        <div class="input-group btn">
+            <label class="btn btn-primary">
+                <input id="avatarInput" class="btn" type="file" name="file">
+            </label>
+            <button id="addAvatarButton"
+                    type="button"
+                    class="btn btn-success">Submit</button>
+        </div>
+    </form>
+</div>
+</script>
+
+<script th:src="@{|/js/avatarComponent.js|}" type="application/javascript"></script>
+<script th:src="@{|/js/instanceCheckers.js|}" type="application/javascript"></script>
+<script th:src="@{|/js/modal.js|}" type="application/javascript"></script>
+<script th:src="@{|/js/constants.js|}" type="application/javascript"></script>
+<script th:src="@{|/js/loaders.js|}" type="application/javascript"></script>
+<script th:src="@{|/js/attachmentItemComponent.js|}" type="application/javascript"></script>
+<script th:src="@{|/js/attachentListComponent.js|}" type="application/javascript"></script>
+<script th:src="@{|/js/emailComponent.js|}" type="application/javascript"></script>
+<script th:src="@{|/js/contactComponent.js|}" type="application/javascript"></script>
+<script th:src="@{|/js/contactsListComponent.js|}" type="application/javascript"></script>
+<script th:src="@{|/js/contactItemComponent.js|}" type="application/javascript"></script>
+<script th:src="@{|/js/phoneComponent.js|}" type="application/javascript"></script>
+<script th:src="@{|/js/phoneItemComponent.js|}" type="application/javascript"></script>
+<script th:src="@{|/js/phonesListComponent.js|}" type="application/javascript"></script>
+<script th:src="@{|/js/fileUploaderComponent.js|}" type="application/javascript"></script>
+<script th:src="@{|/js/contactSearchComponent.js|}" type="application/javascript"></script>
+<script th:src="@{|/js/app.js|}" type="application/javascript"></script>
+
+
+
+</body>
+</html>
